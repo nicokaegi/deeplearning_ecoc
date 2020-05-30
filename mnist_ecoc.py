@@ -1,4 +1,4 @@
-from mnist_ecoc_classifier import ecocModel
+from ecoc_classifier import ecocModel
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, Dropout, Flatten, MaxPooling2D
@@ -21,19 +21,19 @@ def mnist_model():
     return model
 
 def main():
-    ecoc_matrix = np.loadtxt('/home/sindri/NicksPlayGround/ml/cnn/10x10',delimiter=',')
+    ecoc_matrix = np.loadtxt('/home/sindri/NicksPlayGround/ml/deeplearning_ecoc/10x10',delimiter=',')
     main_model = ecocModel(mnist_model ,ecoc_matrix)
 
     np.set_printoptions(edgeitems=30)
 
-    with np.load('/home/sindri/NicksPlayGround/ml/cnn/mnist/mnist_ecoc_data.npz') as data:
+    with np.load('/home/sindri/NicksPlayGround/ml/data/mnist_ecoc_data.npz') as data:
 
         training_images = data[data.files[0]]
         training_lables = data[data.files[1]]
 
 
 
-    losses = cross_val_score(main_model, training_images, training_lables, cv=5)
+    losses = cross_val_score(main_model, training_images, training_lables, cv=5, fit_params={'batch_size' :  32, 'epochs' : 10})
 
     print('ecoc {}'.format(losses))
     print(sum(losses)/len(losses))

@@ -4,8 +4,6 @@ from sklearn.utils.multiclass import unique_labels
 from typing import List
 import numpy as np
 import pandas as pd
-from progress.bar import Bar
-from numba import jit
 
 class ecocModel(ClassifierMixin, BaseEstimator):
 
@@ -72,7 +70,7 @@ class ecocModel(ClassifierMixin, BaseEstimator):
 
         return output
 
-    def fit(self, X, y):
+    def fit(self, X, y, **kwargs):
 
         self.code_word_length = len(self.ecoc_matrix[0])
 
@@ -105,7 +103,7 @@ class ecocModel(ClassifierMixin, BaseEstimator):
             while(bit_pos < self.code_word_length):
 
                 columnBits = y[:, bit_pos]
-                self.model_list[bit_pos].fit(X, columnBits )
+                self.model_list[bit_pos].fit(X, columnBits , **kwargs)
                 bit_pos += 1
 
         # Return the classifier
@@ -124,19 +122,17 @@ class ecocModel(ClassifierMixin, BaseEstimator):
         # Check is fit had been called
         check_is_fitted(self, ['X_', 'y_'])
 
-        with Bar('progress though the ecoc matrix', max=self.code_word_length) as bar:
+        print('predicting')
 
-            results = np.empty((self.code_word_length,) + (X.shape[0],) + (1,))
+        results = np.empty((self.code_word_length,) + (X.shape[0],) + (1,))
 
-            pos = 0;
-            for model in self.model_list:
+        pos = 0;
+        for model in self.model_list:
 
-                results[pos] = model.predict( X )
+            results[pos] = model.predict( X )
+            pos += 1
 
-                bar.next()
-                pos += 1
-
-            results = results.reshape((self.code_word_length,X.shape[0])).T.round()
+        results = results.reshape((self.code_word_length,X.shape[0])).T.round()
 
         return self.determinLable(results)
 
