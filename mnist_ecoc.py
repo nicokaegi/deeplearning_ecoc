@@ -21,22 +21,20 @@ def mnist_model():
     return model
 
 def main():
-    ecoc_matrix = np.loadtxt('/home/sindri/NicksPlayGround/ml/deeplearning_ecoc/10x10',delimiter=',')
-    main_model = ecocModel(mnist_model ,ecoc_matrix)
+    #ecoc_matrix = np.loadtxt('/home/sindri/NicksPlayGround/ml/deeplearning_ecoc/10x10',delimiter=',')
+    #main_model = ecocModel(mnist_model ,ecoc_matrix)
 
-    np.set_printoptions(edgeitems=30)
+    #np.set_printoptions(edgeitems=30)
 
-    with np.load('/home/sindri/NicksPlayGround/ml/data/mnist_ecoc_data.npz') as data:
+    #with np.load('/home/sindri/NicksPlayGround/ml/data/mnist_ecoc_data.npz') as data:
 
-        training_images = data[data.files[0]]
-        training_lables = data[data.files[1]]
+    lables = np.load('./mnist_notecoc_lables.npy')
+    images = np.load('./mnist_images.npy')
 
+    losses = cross_val_score(tf.keras.wrappers.scikit_learn.KerasClassifier(mnist_model()), images, lables, cv=10)
 
-
-    losses = cross_val_score(main_model, training_images, training_lables, cv=5, fit_params={'batch_size' :  32, 'epochs' : 10})
-
-    print('ecoc {}'.format(losses))
-    print(sum(losses)/len(losses))
+    print('mnist {}'.format(losses))
+    print(np.mean(losses))
     print(np.std(losses))
 
 
