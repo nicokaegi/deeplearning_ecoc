@@ -1,4 +1,5 @@
 import numpy as np
+import os
 
 class ecoc_tool(object):
     """a set of functions for operating on a ecoc matrix"""
@@ -27,3 +28,15 @@ class ecoc_tool(object):
                 pos += 1
 
             return ecoc_labels
+
+    def split_columns(self, lables, folderName):
+
+        folder_name = "./{}".format(folderName)
+        if not os.path.exists(folder_name):
+            os.mkdir(folder_name)
+
+        pos = 0
+        while(pos < self.code_word_length):
+            column = lables[:, pos]
+            np.savetxt("./{}/{}.bc".format(folderName,pos), column, fmt='%i')
+            pos += 1

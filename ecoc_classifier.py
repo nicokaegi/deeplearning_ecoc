@@ -3,11 +3,10 @@ from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 from sklearn.utils.multiclass import unique_labels
 from typing import List
 import numpy as np
-import pandas as pd
 
 class ecocModel(ClassifierMixin, BaseEstimator):
 
-    def __init__(self, model_constructer=None, ecoc_matrix=np.empty((1,1)), model_list=[], code_word_length=0, pretrained=False):
+    def __init__(self, model_constructer=None, ecoc_matrix=None, model_list=None, code_word_length=0):
         '''
         there are two ways to use this class,
         one is when there is already a function for defining blank models, which you can then simply supply using the model consuctre paramater
@@ -74,8 +73,6 @@ class ecocModel(ClassifierMixin, BaseEstimator):
 
         self.code_word_length = len(self.ecoc_matrix[0])
 
-        self.model_list = np.empty(self.code_word_length, dtype=BaseEstimator)
-
         '''
         a standerd implementation of fit used by all sklearn models
 
@@ -89,7 +86,9 @@ class ecocModel(ClassifierMixin, BaseEstimator):
         self.X_ = X
         self.y_ = y
 
-        if(not self.pretrained):
+        if(self.model_list == None):
+
+            self.model_list = np.empty(self.code_word_length)
 
             if(self.model_constructer != None):
 
@@ -136,20 +135,20 @@ class ecocModel(ClassifierMixin, BaseEstimator):
 
         return self.determinLable(results)
 
-        def score(self, X ,y):
+    def score(self, X ,y):
 
-            results = self.predict(X)
-            right = 0
+        results = self.predict(X)
+        right = 0
 
-            pos = 0
-            for sample in results:
+        pos = 0
+        for sample in results:
 
-                if (sample == y[pos]).all():
+            if (sample == y[pos]).all():
 
-                    right += 1
-
-
-                pos += 1
+                right += 1
 
 
-            return right/X.shape[0]
+            pos += 1
+
+
+        return right/X.shape[0]
