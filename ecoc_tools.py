@@ -2,7 +2,7 @@ import numpy as np
 import os
 
 class ecoc_tool(object):
-    """a set of functions for operating on a ecoc matrix"""
+    """a set of functions for operating on a ecoc lables"""
 
     def __init__(self, ecoc_matrix=None):
 
@@ -29,14 +29,35 @@ class ecoc_tool(object):
 
             return ecoc_labels
 
-    def split_columns(self, lables, folderName):
+    def split_columns(self, lables, path):
 
-        folder_name = "./{}".format(folderName)
-        if not os.path.exists(folder_name):
-            os.mkdir(folder_name)
+        if not os.path.exists(path):
+            os.mkdir(path)
 
         pos = 0
         while(pos < self.code_word_length):
             column = lables[:, pos]
-            np.savetxt("./{}/{}.bc".format(folderName,pos), column, fmt='%i')
+            np.savetxt("{}/{}.bc".format(path, pos), column, fmt='%i')
             pos += 1
+
+    def deterministic_dropout(self, number_of_samples, number_of_learners, path):
+	
+        p = number_of_samples/number_of_learners
+        whole_range = range(0,number_of_samples)
+        pos = 0
+        while(pos < number_of_learners):
+		
+            index_array = np.array([x for x in whole_range if (x < p*pos or x > p*(pos + 1)) ])
+            np.savetxt("{}/{}.dat".format(path,pos), index_array,fmt='%d' )
+
+            pos += 1
+		 
+    def random_dropout(self, number_of_samples, number_of_learners, path):	
+	
+        whole_array = np.arange(0,number_of_samples, dtype=np.int)
+        chunk_size = int(number_of_samples - number_of_samples/number_of_learners)
+        pos = 0
+        while(pos < number_of_learners):
+            
+            np.savetxt("{}/{}.dat".format(path, pos), np.sort(np.random.choice(whole_array, size=chunk_size, replace=False)), fmt='%d' )
+            pos += 1  	
