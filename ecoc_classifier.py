@@ -4,10 +4,13 @@ from sklearn.utils.multiclass import unique_labels
 from typing import List
 import numpy as np
 
-class ecocModel(ClassifierMixin, BaseEstimator):
+class ecoc_classifier(ClassifierMixin, BaseEstimator):
 
     def __init__(self, model_constructer=None, ecoc_matrix=None, model_list=None, code_word_length=0):
         '''
+        the whole point of the is class is to train a ecoc model using sklearn, keras, or pytorch models (depending on if you implemented a fit function on your pytorch model)
+        while also being a sklearn compatable estimator, meaning I can use sklearn functions like crossvaidation. (note this had not be tested with all of sklearns functions)
+
         there are two ways to use this class,
         one is when there is already a function for defining blank models, which you can then simply supply using the model consuctre paramater
         there other is when you want to supply a list of blank models your self which you can do with by using the model_list paramater
@@ -21,12 +24,11 @@ class ecocModel(ClassifierMixin, BaseEstimator):
         self.ecoc_matrix = ecoc_matrix
         self.model_list = model_list
         self.code_word_length = code_word_length
-        self.pretrained = pretrained
 
     def Hdistance(self, model_output : List , code_word : List ):# determins hamming distance
 
         '''
-        counts the  diffrance in bits
+        counts the diffreance of bits between two code words
         '''
 
         distance = 0
@@ -88,14 +90,14 @@ class ecocModel(ClassifierMixin, BaseEstimator):
 
         if(self.model_list == None):
 
-            self.model_list = np.empty(self.code_word_length)
+            self.model_list = []
 
             if(self.model_constructer != None):
 
                 bit_pos = 0
                 while(bit_pos < self.code_word_length):
 
-                    self.model_list[bit_pos] = self.model_constructer()
+                    self.model_list.append(self.model_constructer())
                     bit_pos += 1
 
             bit_pos = 0
